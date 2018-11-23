@@ -1,0 +1,163 @@
+﻿<Window x:Class="mm34wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mm34wpf"
+        mc:Ignorable="d"
+        Title="v1.04c" Height="700" Width="1000">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:BooleanValueInverter x:Key="Inverter" />
+        <local:MyViewModel x:Key="ResourceViewModel" />
+    </Window.Resources>
+
+    <DockPanel DataContext="{StaticResource ResourceViewModel}">
+        <TabControl x:Name="tabControl1" 
+                    SelectedIndex="{Binding TabcontrolSelectedIndex}" 
+                    HorizontalAlignment="Stretch" 
+                    Margin="10,10,10,10" 
+                    VerticalAlignment="Stretch">
+            <TabItem Header="Input">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBox Name="tbInputText" 
+                             Text="{Binding Path=InputText, Mode=TwoWay}"
+                             Grid.Row="0"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"/>
+                    <StackPanel Grid.Row="1">
+                        <Label DockPanel.Dock="Top" 
+                               Content="Input mask"/>
+                        <TextBox Name="tbInputMask"
+                                 Text="{Binding Path=InputMask, Mode=TwoWay}"
+                                 DockPanel.Dock="Top"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True" Height="140"/>
+                        <DockPanel VerticalAlignment="Top">
+                            <TextBlock Text="Open/Close brackets:"/>
+                            <TextBox Name="tbInputOpenBracket" 
+                                     Text="{Binding Path=InputOpenBracket}"
+                                     Padding="5,0,5,0"/>
+                            <TextBox Name="tbInputCloseBracket" 
+                                     Text="{Binding Path=InputCloseBracket}"
+                                     Padding="5,0,5,0"/>
+                            <Button Name="btnInputNext"
+                                Content="next"
+                                Command="{Binding Command1}"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"/>
+                        </DockPanel>
+                        <DockPanel VerticalAlignment="Stretch">
+                            <ListView Name="lvInputMask"
+                                      SelectionMode="Extended"
+                                      ItemsSource="{Binding Path=InputVarList}" MinHeight="40">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Focusable" Value="false"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Visibility="{Binding Path=IsPostfix, 
+                                                                         Converter={StaticResource Inverter}, 
+                                                                         ConverterParameter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="{Binding Path=Caption}" 
+                                                       HorizontalAlignment="Center"/>
+                                            <TextBox Text="{Binding Path=RegexString, Mode=TwoWay}"
+                                                     Padding="5,0,5,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                        </DockPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Preview">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <DataGrid Grid.Row="0"
+                              Name="gridPreview"
+                              ItemsSource="{Binding Path=InputParsed.DefaultView}"
+                              AutoGeneratedColumns="gridPreview_AutoGeneratedColumns"/>
+                    <StackPanel Grid.Row="1">
+                        <Label DockPanel.Dock="Top" 
+                               Content="Output mask"/>
+                        <TextBox Name="tbOutputMask"
+                                 Text="{Binding Path=OutputMask, Mode=TwoWay}"
+                                 DockPanel.Dock="Top"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True" Height="140"/>
+                        <DockPanel VerticalAlignment="Top">
+                            <TextBlock Text="Open/Close brackets:"/>
+                            <TextBox Name="tbOutputOpenBracket" 
+                                     Text="{Binding Path=OutputOpenBracket}"
+                                     Padding="5,0,5,0"/>
+                            <TextBox Name="tbOutputCloseBracket" 
+                                     Text="{Binding Path=OutputCloseBracket}"
+                                     Padding="5,0,5,0"/>
+                            <Button Name="btnPreviewNext"
+                                Command="{Binding Command2}"
+                                Content="next"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"/>
+                        </DockPanel>
+                        <DockPanel VerticalAlignment="Stretch">
+                            <ListView Name="lvOutputMask"
+                                      SelectionMode="Extended"
+                                      ItemsSource="{Binding Path=OutputVarList}" MinHeight="40">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Focusable" Value="false"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Visibility="{Binding Path=IsPostfix, 
+                                                                         Converter={StaticResource Inverter}, 
+                                                                         ConverterParameter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="{Binding Path=Caption}" 
+                                                       HorizontalAlignment="Center"/>
+                                            <TextBox Text="{Binding Path=RegexString, Mode=TwoWay}"
+                                                     Padding="5,0,5,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                        </DockPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Output">
+                <Grid>
+                    <TextBox Name="tbOutputText"
+                                 Text="{Binding Path=OutputText, Mode=OneWay}"
+                                 DockPanel.Dock="Top"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
+</Window>
