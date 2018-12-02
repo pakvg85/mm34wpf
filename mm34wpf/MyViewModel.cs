@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,23 +12,31 @@ namespace mm34wpf
     {
         private MyModel _myModel;
 
-        public string InputText { get { return Get<string>(); } set { Set(value); } }
-        public string InputMask { get { return Get<string>(); } set { Set(value); } }
-        public string InputOpenBracket { get { return Get<string>(); } set { Set(value); } }
-        public string InputCloseBracket { get { return Get<string>(); } set { Set(value); } }
-        public string OutputMask { get { return Get<string>(); } set { Set(value); } }
-        public string OutputOpenBracket { get { return Get<string>(); } set { Set(value); } }
-        public string OutputCloseBracket { get { return Get<string>(); } set { Set(value); } }
-        public string OutputText { get { return Get<string>(); } set { Set(value); } }
-        public int TabcontrolSelectedIndex { get { return Get<int>(); } set { Set(value); } }
-        public DataTable InputParsed { get { return Get<DataTable>(); } set { Set(value); } }
-        public MyVarList InputVarList { get { return Get<MyVarList>(); } set { Set(value); } }
-        public MyVarList OutputVarList { get { return Get<MyVarList>(); } set { Set(value); } }
+        public string InputText { get => Get<string>(); set => Set(value); }
+        public string InputMask { get => Get<string>(); set => Set(value); }
+        public string InputOpenBracket { get => Get<string>(); set => Set(value); }
+        public string InputCloseBracket { get => Get<string>(); set => Set(value); }
+        public string OutputMask { get => Get<string>(); set => Set(value); }
+        public string OutputOpenBracket { get => Get<string>(); set => Set(value); }
+        public string OutputCloseBracket { get => Get<string>(); set => Set(value); }
+        public string OutputText { get => Get<string>(); set => Set(value); }
+        public int TabcontrolSelectedIndex { get => Get<int>(); set => Set(value); }
+        public DataTable InputParsed { get => Get<DataTable>(); set => Set(value); }
+        public MyVarList InputVarList { get => Get<MyVarList>(); set => Set(value); }
+        public MyVarList OutputVarList { get => Get<MyVarList>(); set => Set(value); }
+
+        public string StatusBarText
+        {
+            get => Get<string>();
+            private set => Set(value);
+        }
 
         private ICommand _command1;
         public ICommand Command1 => _command1 ?? (_command1 = new RelayCommand(obj => ProcessParseInput()));
         private ICommand _command2;
         public ICommand Command2 => _command2 ?? (_command2 = new RelayCommand(obj => ProcessFillPreview()));
+
+        public Logger GlobalLogger = LogManager.GetCurrentClassLogger();
 
         public MyViewModel()
         {
@@ -45,6 +54,8 @@ namespace mm34wpf
             OutputOpenBracket = Properties.Settings.Default.defaultOpenBracket;
             OutputCloseBracket = Properties.Settings.Default.defaultCloseBracket;
 
+            ProcessMessage("Это статусбар. Сюда будут выводиться сообщения об ошибках");
+
             InputVarList = new MyVarList();
             OutputVarList = new MyVarList();
             _myModel = new MyModel();
@@ -52,9 +63,19 @@ namespace mm34wpf
             PropertyChanged += MyViewModel_PropertyChanged;
         }
 
-        private void ProcessException(Exception ex)
+        private void ProcessException(Exception ex, bool isFatal = false)
         {
-            throw ex;
+            ProcessMessage(ex.Message + " (детальное инфо об ошибке - в файле лога в папке с программой)");
+
+            if (isFatal)
+                GlobalLogger.Fatal(ex, "UNHANDLED EXCEPTION");
+            else
+                GlobalLogger.Error(ex);
+        }
+
+        private void ProcessMessage(string msg)
+        {
+            StatusBarText = msg;
         }
 
         private void MyViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -87,10 +108,11 @@ namespace mm34wpf
             {
                 _myModel.ParseMask(InputMask, InputOpenBracket, InputCloseBracket, InputVarList);
                 var rows = _myModel.ParseInputText(InputText, InputVarList);
-
                 InputParsed = _myModel.BuildDataTable(InputVarList.Columns, rows);
 
                 TabcontrolSelectedIndex++;
+
+                ProcessMessage("Входная строка распарсена успешно");
             }
             catch (Exception ex)
             {
@@ -102,19 +124,22 @@ namespace mm34wpf
         {
             try
             {
-                _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList);
+                // TODO: переделать работу с InputParsed
+                if (InputParsed == null)
+                    throw new Exception("Первый шаг пропущен. Вернитесь на предыдущую страницу и нажмите next");
 
+                _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList);
                 var tableColumnCaptions = InputParsed
                     .Columns.Cast<DataColumn>()
                     .Select(x => x.Caption)
                     .ToArray();
-
                 var tableRows = InputParsed.Rows.OfType<DataRow>();
                 var tableValues = tableRows.Select(x => x.ItemArray.ToList());
-
                 OutputText = _myModel.BuildOutputText(tableValues, tableColumnCaptions, OutputVarList);
 
                 TabcontrolSelectedIndex++;
+
+                ProcessMessage("Выходная строка сформирована успешно");
             }
             catch (Exception ex)
             {

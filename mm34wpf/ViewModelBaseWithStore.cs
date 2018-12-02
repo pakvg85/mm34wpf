@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace mm34wpf
 {
-    public abstract class ViewModelBaseWithStore : INotifyPropertyChanged
+    public class ViewModelBaseWithStore : ViewModelBase
     {
         private Dictionary<string, object> _valueStore = new Dictionary<string, object>();
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         protected T Get<T>([CallerMemberName]string property = null)
         {
@@ -18,20 +15,12 @@ namespace mm34wpf
             return (T)value;
         }
 
-        protected void Set<T>(T value, [CallerMemberName]string property = null)
+        protected bool Set<T>(T value, [CallerMemberName]string property = null)
         {
+            if (_valueStore.ContainsKey(property) && EqualityComparer<T>.Default.Equals((T)_valueStore[property], value)) return false;
             _valueStore[property] = value;
-            OnPropertyChangedInternal(property);
-        }
-
-        protected void OnPropertyChanged([CallerMemberName]string property = null)
-        {
-            OnPropertyChangedInternal(property);
-        }
-
-        private void OnPropertyChangedInternal(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            OnPropertyChanged(property);
+            return true;
         }
     }
 }

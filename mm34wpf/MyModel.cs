@@ -13,7 +13,7 @@ namespace mm34wpf
         public void ParseMask(string maskSrc, string openBracket, string closeBracket, IList<MyVar> varList)
         {
             if (string.IsNullOrEmpty(maskSrc) || string.IsNullOrEmpty(openBracket) || string.IsNullOrEmpty(closeBracket))
-                throw new Exception($"Параметры \"маска\" и \"открывающая/закрывающая скобка\"  не должны быть пустыми");
+                throw new Exception($"Маска и открывающая/закрывающая скобка не должны быть пустыми");
 
             // (?<prefix>.*?)(?:%)(?<varName>.*?)(?:%)(?=$|%.*?%)
 
@@ -24,7 +24,7 @@ namespace mm34wpf
             if (matchesMask.Count == 0)
             {
                 varList.Clear();
-                throw new Exception($"Ни одного совпадения не найдено");
+                throw new Exception($"Не удалось распарсить входную маску. Проверьте открывающую/закрывающую скобки и текст маски. В маске должна быть хотя бы одна переменная");
             }
 
             var newMyVarList = new List<MyVar>();
@@ -49,11 +49,8 @@ namespace mm34wpf
                         case 2: newCaption = Regex.Escape(group.Value); break;
                     }
                 }
-                if (Regex.IsMatch(newCaption, @"\W"))
-                    throw new Exception($"Некорректное имя для переменной: {newCaption}");
-
                 if (newMyVarList.Any(x => x.Caption == newCaption))
-                    throw new Exception($"Переменная с именем {newCaption} уже существует");
+                    throw new Exception($"Переменная с именем {newCaption} уже используется в этой маске. Задайте другое имя");
 
                 newMyVarList.Add(new MyVar
                 {
@@ -188,11 +185,12 @@ namespace mm34wpf
             var colDict = tableColumnCaptions
                 .Select((x, i) => new { ColumnCaption = x, ColumnIndex = i })
                 .ToDictionary(x => x.ColumnCaption, i => i.ColumnIndex);
+
             foreach (var iterVar in outputVarList)
             {
-                if (!colDict.ContainsKey(iterVar.Caption))
+                if (!iterVar.IsPostfix && !colDict.ContainsKey(iterVar.Caption))
                 {
-                    throw new Exception($"Поле `{iterVar.Caption}` отсутствует в маске");
+                    throw new Exception($"Выходная маска не соответствует входной маске; проблема в переменной '{iterVar.Caption}'. Проверьте правильность заполнения входной и выходной маски");
                 }
             }
 
