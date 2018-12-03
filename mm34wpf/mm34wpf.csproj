@@ -70,7 +70,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -78,21 +78,21 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ExtensionCollectionRemoveByPredicate.cs" />
-    <Compile Include="RelayCommand.cs" />
-    <Compile Include="ViewModelBase.cs" />
-    <Compile Include="ViewModelBaseWithStore.cs" />
-    <Compile Include="BooleanValueInverter.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Common\Extensions\ExtensionCollectionRemoveByPredicate.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\ViewModelBaseWithStore.cs" />
+    <Compile Include="Common\Converters\BooleanValueInverter.cs" />
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyModel.cs" />
-    <Compile Include="MyVar.cs" />
-    <Compile Include="MyViewModel.cs" />
-    <Compile Include="ObservableCollectionExt.cs" />
+    <Compile Include="Models\MyModel.cs" />
+    <Compile Include="Models\MyVar.cs" />
+    <Compile Include="ViewModels\MyViewModel.cs" />
+    <Compile Include="Common\ObservableCollectionExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
