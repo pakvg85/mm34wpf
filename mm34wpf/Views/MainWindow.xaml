@@ -30,14 +30,18 @@
                     <TextBox Text="{Binding Path=InputText, Mode=TwoWay}"
                              Grid.Row="0"
                              TextWrapping="Wrap"
-                             AcceptsReturn="True"/>
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             VerticalScrollBarVisibility="Auto"/>
                     <StackPanel Grid.Row="1">
                         <Label DockPanel.Dock="Top" 
                                Content="Input mask"/>
                         <TextBox Text="{Binding Path=InputMask, Mode=TwoWay}"
                                  DockPanel.Dock="Top"
                                  TextWrapping="Wrap"
-                                 AcceptsReturn="True" Height="140"/>
+                                 AcceptsReturn="True"
+                                 AcceptsTab="True"
+                                 Height="140"/>
                         <DockPanel VerticalAlignment="Top">
                             <TextBlock Text="Open/Close brackets:"/>
                             <TextBox Text="{Binding Path=InputOpenBracket}"
@@ -96,7 +100,9 @@
                         <TextBox Text="{Binding Path=OutputMask, Mode=TwoWay}"
                                  DockPanel.Dock="Top"
                                  TextWrapping="Wrap"
-                                 AcceptsReturn="True" Height="140"/>
+                                 AcceptsReturn="True"
+                                 AcceptsTab="True"
+                                 Height="140"/>
                         <DockPanel VerticalAlignment="Top">
                             <TextBlock Text="Open/Close brackets:"/>
                             <TextBox Text="{Binding Path=OutputOpenBracket}"
@@ -144,7 +150,9 @@
                     <TextBox Text="{Binding Path=OutputText, Mode=OneWay}"
                              DockPanel.Dock="Top"
                              TextWrapping="Wrap"
-                             AcceptsReturn="True"/>
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             VerticalScrollBarVisibility="Auto"/>
                 </Grid>
             </TabItem>
         </TabControl>
