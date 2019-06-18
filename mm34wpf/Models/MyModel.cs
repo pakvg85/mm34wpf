@@ -10,7 +10,7 @@ namespace mm34wpf
     {
         public const string DefaultRegexString = ".*?";
 
-        public void ParseMask(string maskSrc, string openBracket, string closeBracket, IList<MyVar> varList)
+        public void ParseMask(string maskSrc, string openBracket, string closeBracket, IList<MyVar> varList, bool skipDupChecksForOutput = false)
         {
             if (string.IsNullOrEmpty(maskSrc) || string.IsNullOrEmpty(openBracket) || string.IsNullOrEmpty(closeBracket))
                 throw new Exception($"Маска и открывающая/закрывающая скобка не должны быть пустыми");
@@ -49,7 +49,7 @@ namespace mm34wpf
                         case 2: newCaption = Regex.Escape(group.Value); break;
                     }
                 }
-                if (newMyVarList.Any(x => x.Caption == newCaption))
+                if (!skipDupChecksForOutput && newMyVarList.Any(x => x.Caption == newCaption))
                     throw new Exception($"Переменная с именем {newCaption} уже используется в этой маске. Задайте другое имя");
 
                 newMyVarList.Add(new MyVar
@@ -64,25 +64,29 @@ namespace mm34wpf
             var newPostfixVar = new MyVar { IsPostfix = true, Prefix = Regex.Escape(maskSrc.Substring(lastPos)) };
             newMyVarList.Add(newPostfixVar);
 
-            varList.RemoveByPredicate(x => !newMyVarList.Any(i => i.Caption == x.Caption));
-
-            var existIndex = -1;
-            foreach (var newMyVar in newMyVarList)
+            //varList.RemoveByPredicate(x => !newMyVarList.Any(i => i.Caption == x.Caption));
+            //var existIndex = -1;
+            //foreach (var newMyVar in newMyVarList)
+            //{
+            //    var existMyVar = varList.FirstOrDefault(x => x.Caption == newMyVar.Caption);
+            //    if (existMyVar != null)
+            //    {
+            //        existIndex++;
+            //        existMyVar.Prefix = newMyVar.Prefix;
+            //    }
+            //    else
+            //    {
+            //        existIndex++;
+            //        varList.Insert(existIndex, newMyVar);
+            //    }
+            //}
+            varList.Clear();
+            foreach (var i in newMyVarList)
             {
-                var existMyVar = varList.FirstOrDefault(x => x.Caption == newMyVar.Caption);
-                if (existMyVar != null)
-                {
-                    existIndex++;
-                    existMyVar.Prefix = newMyVar.Prefix;
-                }
-                else
-                {
-                    existIndex++;
-                    varList.Insert(existIndex, newMyVar);
-                }
+                varList.Add(i);
             }
 
-            existIndex = -1;
+            var existIndex = -1;
             foreach (var myVar in varList)
             {
                 existIndex++;

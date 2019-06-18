@@ -92,7 +92,7 @@ namespace mm34wpf
                     case nameof(OutputMask):
                     case nameof(OutputOpenBracket):
                     case nameof(OutputCloseBracket):
-                        _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList);
+                        _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList, skipDupChecksForOutput: true);
                         break;
                 }
             }
@@ -128,7 +128,7 @@ namespace mm34wpf
                 if (InputParsed == null)
                     throw new Exception("Первый шаг пропущен. Вернитесь на предыдущую страницу и нажмите next");
 
-                _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList);
+                _myModel.ParseMask(OutputMask, OutputOpenBracket, OutputCloseBracket, OutputVarList, skipDupChecksForOutput: true);
                 var tableColumnCaptions = InputParsed
                     .Columns.Cast<DataColumn>()
                     .Select(x => x.Caption)
